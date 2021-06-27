@@ -9,6 +9,7 @@ Very usefull in terms of data entry and user experience
 - [x] Support Custom Dictionary<String,List<String>> so that it can support categories
 - [x] Add button to force open dropdown
 - [ ] Validate data typed according to the ValidationType parameter
+- [ ] Hint in the Input field for the first possible answer
 - [ ] Add functionality for more than one selection
 
 ### Screenshots
