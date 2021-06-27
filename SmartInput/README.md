@@ -1,5 +1,5 @@
 # SmartInput
-![SmartInput1](https://i.imgur.com/wDfHkvA.png)
+![img]https://i.imgur.com/6b0a3JC.gif
 ### About
 This is a custom blazor component made for DropDown + Input field.
 Very usefull in terms of data entry and user experience
