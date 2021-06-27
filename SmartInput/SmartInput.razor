@@ -6,7 +6,7 @@
 {
     <div class="input-group ">
 
-        <input type="text" @bind-value="text" class="form-control form-control-dark autocomplete" style=" height:auto;" @bind-value:event="oninput" @onkeyup="(()=>autosuggest(false))" @onfocusout="hideDisplay" />
+        <input type="Input" @bind-value="Input" class="form-control form-control-dark autocomplete" style=" height:auto;" @bind-value:event="oninput" @onkeyup="(()=>autosuggest(false))" @onfocusout="hideDisplay" />
         <div style="cursor:pointer" class="input-group-append">
             <div @onclick="toggleDisplay"  class="input-group-text dark-theme">
                 <span  class="oi oi-chevron-bottom"></span>
@@ -19,12 +19,14 @@
 }
 else
 {
-    <input type="text" @bind-value="text" class="form-control form-control-dark autocomplete" style=" height:auto;" @bind-value:event="oninput" @onkeyup="(()=>autosuggest(false))" @onfocusout="hideDisplay" />
+    <input type="Input" @bind-value="Input" class="form-control form-control-dark autocomplete" style=" height:auto;" @bind-value:event="oninput" @onkeyup="(()=>autosuggest(false))" @onfocusout="hideDisplay" />
 
 }
 
 
 @code {
+    [Parameter]
+    public string Input { get; set; }
 
     [Parameter]
     public bool Validate { get; set; }
@@ -38,7 +40,6 @@ else
 
     string dd = "unhide";
     private int seq = 0;
-    public string text = "";
     private static List<String> activity_types = new List<string>(); //LOAD ALL TYPES
     private static List<String> employees_and_groups = new List<string>(); //LOAD ALL TYPES
     private static List<String> activity_titles = new List<string>();
@@ -65,16 +66,14 @@ else
         }
     }
 
-
-    //NOT YET IMPLEMENTED
-    private void validateText() {
+    private void validateInput() {
         if (Validate)
         {
             if (ValidationType == SmartInput_ValidationTypes.Type_Integer)
             {
                 try
                 {
-                    int.Parse(text);
+                    int.Parse(Input);
                 }
                 catch
                 {
@@ -86,21 +85,21 @@ else
 
     protected override Task OnInitializedAsync()
     {
-        /* TESTING DATA */
-        if (activity_titles.Count() == 0)
-        {
-            //LOAD STRING LISTS
-            activity_titles.Add("DA D".ToUpper());
-            activity_titles.Add("DA D".ToUpper());
-            activity_titles.Add("DA D".ToUpper());
-            activity_titles.Add("DA D".ToUpper());
-            activity_titles.Add("DA D".ToUpper());
 
+        /* TESTING DATA */
+        //LOAD STRING LISTS
+        if (activity_titles.Count == 0)
+        {
+            activity_titles.Add("Test 1");
+            activity_titles.Add("Test 2");
+            activity_titles.Add("Test 3");
+            activity_titles.Add("Test 4");
+            activity_titles.Add("Test 5");
         }
         Dropdown_List = new Dictionary<String, List<String>>();
-        Dropdown_List.Add("DA", activity_titles);
-        Dropdown_List.Add("DADE", new List<string> { "DADAWD", "DEDADAEDE" });
-
+        Dropdown_List.Add("First set of tests", activity_titles);
+        Dropdown_List.Add("Second set of tests", new List<string> { "Test 6", "Test 7" });
+        /* TESTING DATA */
 
 
 
@@ -125,51 +124,54 @@ else
     {
 
 
-        if ((text.Split(';')[text.Split(';').Count() - 1].Count() >= 2)||force)
+        if (force||(Input.Split(';')[Input.Split(';').Count() - 1].Count() >= 2))
         {
             builder.OpenElement(seq++, "div");
             builder.AddAttribute(seq++, "class", "form-control-dark autocomplete-items");
+            builder.AddAttribute(seq++, "style", "box-shadow: 0px 19px 19px 0px rgb(0 0 0 / 30 %);");
 
-
+            
 
 
             int tabindex = 0;
             foreach (var c in Dropdown_List)
             {
-                if (c.Value.Count > 0)
+
+                List<String> matches = new List<string>();
+                if (!force)//FIND MATCHES
                 {
-
-                    builder.OpenElement(seq++, "div");
-                    builder.AddAttribute(seq++, "class", "autocomplete-category");
-
-                    builder.AddContent(seq++, c.Key);
-                    builder.CloseElement();
-                    foreach (var k in c.Value)
-                    {
-
-
-                        if ((k.Trim().ToUpper().Contains(text.Trim().ToUpper()) && (k != text)) || force)
-                        {
-                            tabindex++;
-                            var callback = EventCallback.Factory.Create(this, arg =>
-                            {
-                                text = k;
-                            });
-                            builder.OpenElement(seq++, "option");
-                            builder.AddAttribute(seq++, "onmousedown", callback);
-                            builder.AddContent(seq++, k);
-                            builder.CloseElement();
-                        }
-
-
-
-
-                    }
+                    matches=c.Value.Where(k=> k.Trim().ToUpper().Contains(Input.Trim().ToUpper()) && (k != Input)).ToList();
+                }
+                else { //RETURN ALL
+                    matches = c.Value.ToList();
 
                 }
 
-            }
+                // ADD CATEGORY 
+                if ((c.Key != "")&&(matches.Count()>0))
+                {
+                    builder.OpenElement(seq++, "div");
+                    builder.AddAttribute(seq++, "class", "autocomplete-category");
+                    builder.AddAttribute(seq++, "style", "cursor:pointer");
+                    builder.AddContent(seq++, c.Key);
+                    builder.CloseElement();
+                }
 
+
+                // ADD ITEMS 
+                foreach (var k in matches)
+                {
+                    tabindex++;
+                    var callback = EventCallback.Factory.Create(this, arg =>
+                    {
+                        Input = k;
+                    });
+                    builder.OpenElement(seq++, "option");
+                    builder.AddAttribute(seq++, "onmousedown", callback);
+                    builder.AddContent(seq++, k);
+                    builder.CloseElement();
+                }
+            }
             builder.CloseElement();
         }
     };
