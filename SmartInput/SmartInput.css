@@ -77,3 +77,79 @@
 .form-control:focus {
     box-shadow: none;
 }
+/* Standard syntax */
+@keyframes fadein {
+    from {
+        display: none;
+        max-height: 0;
+        visibility: collapse;
+        opacity: 0;
+    }
+
+    to {
+        max-height: 999px;
+        opacity: 1;
+    }
+}
+/* Standard syntax */
+@keyframes fadeout {
+    from {
+        max-height: 999px;
+        opacity: 1;
+    }
+
+    to {
+        display: none;
+        visibility: collapse;
+        max-height: 0;
+        opacity: 0;
+    }
+}
+/* Chrome, Safari, Opera */
+@-webkit-keyframes fadein {
+    from {
+        display: none;
+        visibility: collapse;
+        opacity: 0;
+        height: 0;
+    }
+
+    to {
+        display: block;
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: rgba(20,20,20,1);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: rgba(90,90,90,1);
+}
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(120,120,120,1);
+    }
+.unhide {
+    animation: fadein 0.2s;
+    -webkit-animation: fadein 0.2s; /* Chrome, Safari, Opera */
+    animation-fill-mode: forwards;
+    -webkit-animation-fill-mode: forwards;
+}
+
+.hide {
+    animation: fadeout 0.2s;
+    -webkit-animation: fadeout 0.2s; /* Chrome, Safari, Opera */
+    animation-fill-mode: forwards;
+    -webkit-animation-fill-mode: forwards;
+}
