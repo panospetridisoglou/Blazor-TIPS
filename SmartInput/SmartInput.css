@@ -1,0 +1,79 @@
+.autocomplete {
+    display: inline-block;
+}
+
+.autocomplete-items {
+    position: absolute;
+    border: 1px solid rgb(19,20,23);
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    max-width: calc(100% - 38px);
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    top: 100%;
+    left: 0;
+    right: 0;
+}
+.autocomplete-category {
+    padding: 10px;
+    max-width: calc(100% );
+    cursor: pointer;
+    background-color: rgb(19,20,23);
+    border-bottom: 1px solid rgb(19,20,23);
+    white-space: pre-wrap;
+    padding: 10px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.2);
+    margin-top: 20px;
+
+}
+.autocomplete-items option {
+    padding: 10px;
+    max-width: calc(100% );
+    cursor: pointer;
+    background-color: rgb(19,20,23);
+    border-bottom: 1px solid rgb(19,20,23);
+    white-space: pre-wrap;
+}
+
+.autocomplete-items option:focus {
+    background-color: rgba(1,103,180,1) !important;
+    color: white !important;
+}
+
+
+/*when hovering an item:*/
+.autocomplete-items option:hover {
+    background-color: rgba(50,50,50,1);
+}
+
+.dark-theme {
+    background-color: rgb(55 59 65) !important;
+    color:rgba(240,240,240) !important;
+    border: 1px solid rgba(0,0,0,0.5) !important;
+}
+
+
+.dark-theme:disabled {
+    background-color: black;
+    border: 1px solid black;
+}
+
+
+.form-control-dark {
+    background-color: rgba(0, 0, 0, .5);
+    border-color: rgba(0, 0, 0, .5);
+}
+.form-control-dark:focus {
+    background-color: rgba(0, 0, 0, .5);
+    border-color: rgba(0, 0, 0, .5);
+    color:white;
+}
+.form-control {
+    color:unset;
+}
+.form-control:focus {
+    box-shadow: none;
+}
