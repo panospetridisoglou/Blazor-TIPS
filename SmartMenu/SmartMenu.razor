@@ -1,0 +1,198 @@
+@inject IJSRuntime jsr;
+@using System.Linq;
+@using System.Reflection;
+
+<div class="@hide" style="        position: fixed;
+        background: rgb(15 16 19);
+
+        min-height: 100vh;
+        height: 100% !important;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1;">
+</div>
+
+
+<div class="@hide" style="        position: absolute;
+        width: 100%;
+        z-index: 2;
+        top:100px;
+        left:0px;
+    ">
+
+
+    <div class="container-fluid panos-container">
+
+        <a href="#" style="
+        float: right;
+        margin-top: -60px;
+        color: white;
+        z-index: 2;
+        margin-right: 44px;
+        text-shadow: 0px 0px 10px black;
+    " class="@hide" @onclick="Toggle" @onclick:preventDefault><span style="font-size:24px" class="oi oi-x"></span></a>
+
+
+        <div style="width:95%;margin:0 auto;padding:10px">
+            <div style="width:100%;">
+
+                <input type="text" class="form-control" placeholder="Search" style="
+                background-color: rgba(0,0,0,0.8);
+                text-align:center;
+                color: white;
+                border-radius: 0.5em;
+                border: 1px solid rgba(255,255,255,0);
+                width: 100%;">
+            </div>
+            <br />
+            <br />
+            <!-- FAVOURITES
+    <h5 style="color:white">Αγαπημένα</h5>
+
+
+    <div style="width: 100%;margin: 0 auto;border: 1px solid rgba(255,255,255,0.2);border-radius: 0.5em;background: rgba(0,0,0,0.8);padding-top: 15px;">
+
+
+
+        <div style="margin: 10px;width:150px;align-items: center;text-align: -webkit-center;">
+            <NavLink href="#" class="panos-button-menu nav-link py-3 " style="width:66px;height:66px" @onclick="Toggle">
+                <span style="font-size:24px" class="oi oi-home"></span>
+            </NavLink>
+            <p style="color:white;text-shadow: 0 0 3px black, 0 0 5px black;">Αρχική</p>
+        </div>
+
+    </div>
+    <br />
+    <br />-->
+            @if ((PageIcon.Count == PageRoute.Count) && (PageIcon.Count == PageTitle.Count))
+            {
+            @for (appCount = 0; appCount < PageTitle.Count(); appCount++)
+            {
+
+                <div style="float:left;margin: 10px;width:150px;align-items: center;text-align: -webkit-center;">
+                    <a href="@PageRoute[appCount]" class="panos-button-menu nav-link py-3 " style="width:66px;height:66px " @onclick="Toggle">
+                        <object type="image/svg+xml" fill="white" data="@PageIcon[appCount]" height="28" width="28" style="color:white"/>
+
+                    </a>
+                    <p style="color:white;text-shadow: 0 0 3px black, 0 0 5px black;">@PageTitle[appCount]</p>
+                </div>
+
+            }
+            }
+
+        </div>
+    </div>
+</div>
+@code {
+    public List<String> PageTitle =new List<string>();
+    public List<String> PageIcon = new List<string>();
+    public List<String> PageRoute = new List<string>();
+
+
+
+    public int appCount ;
+    public List<Type> GetRoutables()
+    {
+        // Get all the components whose base class is ComponentBase
+        var components = Assembly.GetExecutingAssembly()
+           .ExportedTypes
+         .Where(t => t.IsSubclassOf(typeof(ComponentBase))).ToList();
+
+        var routables = components.Where(c =>
+            c.GetCustomAttributes(inherit: true).OfType<RouteAttribute>
+            ().ToArray().Count() > 0).ToList<Type>();
+
+
+        foreach (var routable in routables)
+        {
+            Console.WriteLine(routable.ToString());
+
+        }
+        return routables;
+    }
+    private string  GetImageUrlFromComponent(Type component) {
+
+        string variableimage =
+        component.GetFields(BindingFlags.Instance |
+                BindingFlags.Static | BindingFlags.Public ).Where(f => f.Name=="MenuIcon").Select(f=> f.GetRawConstantValue()).FirstOrDefault().ToString();
+
+        return variableimage;
+    }
+    private string GetTitleFromComponent(Type component)
+    {
+
+        string variableimage =
+        component.GetFields(BindingFlags.Instance |
+                BindingFlags.Static | BindingFlags.Public).Where(f => f.Name == "MenuTitle").Select(f => f.GetRawConstantValue()).FirstOrDefault().ToString();
+
+        return variableimage;
+    }
+    private  string GetRouteFromComponent(Type component)
+    {
+        var attributes = component.GetCustomAttributes(inherit: true);
+
+        var routeAttributes = attributes.OfType<RouteAttribute>();
+        var routeAttribute  = attributes.OfType<RouteAttribute>().FirstOrDefault();
+
+        if (routeAttribute is null)
+        {
+            // Only map routable components
+            return null;
+        }
+
+        var route = routeAttribute.Template;
+
+        if (string.IsNullOrEmpty(route))
+        {
+            throw new Exception($"RouteAttribute in component '{component}' has empty route template");
+        }
+
+        // Doesn't support tokens yet
+        if (route.Contains('{'))
+        {
+            throw new Exception($"RouteAttribute for component '{component}' contains route values. Route values are invalid for prerendering");
+        }
+
+        return route;
+    }
+
+    protected override Task OnInitializedAsync() {
+        var routables=GetRoutables();
+        foreach( var c in routables)
+        {
+            try
+            {
+                var url = GetRouteFromComponent(c);
+                var img = GetImageUrlFromComponent(c);
+                var title = GetTitleFromComponent(c);
+
+                PageRoute.Add(url);
+                PageIcon.Add(img);
+                PageTitle.Add(title);
+            }
+            catch { }
+        }
+        StateHasChanged();
+        return base.OnInitializedAsync();
+    }
+
+    public string hide = "hidden";
+    public void Toggle()
+    {
+        if (hide == "unhide")
+        {
+
+            hide = "hide";
+        }
+        else
+        {
+            hide = "unhide";
+        }
+
+        jsr.InvokeVoidAsync("toTop");
+        StateHasChanged();
+    }
+
+
+}
