@@ -1,25 +1,37 @@
 @inject IJSRuntime js;
 @using Shared.Models;
-@page "/SmartInput"
+
 
 @if (Dropdown_List != null)
 {
-    <div class="input-group ">
-
-        <input type="Input" @bind-value="Input" class="form-control form-control-dark autocomplete" style=" height:auto;" @bind-value:event="oninput" @onkeyup="(()=>autosuggest(false))" @onfocusout="hideDisplay" />
+    <div class="input-group @validationClass">
+        <input type="text" @bind-value="Input" class="form-control form-control-dark autocomplete  " style=" height:auto;" @bind-value:event="oninput" @onkeyup="(() => autosuggest(false))" @onfocusout="hideDisplay" />
         <div style="cursor:pointer" class="input-group-append">
-            <div @onclick="toggleDisplay"  class="input-group-text dark-theme">
-                <span  class="oi oi-chevron-bottom"></span>
+            <div @onclick="toggleDisplay" class="input-group-text dark-theme">
+                <span class="oi oi-chevron-bottom"></span>
             </div>
         </div>
     </div>
-    <div class="@dd" style=" position: relative; ">
+    <div class="@dd" style=" position: relative; z-index: 1; ">
         @DynamicRender
     </div>
 }
+else if ((ValidationType == null) || (ValidationType == SmartInput_ValidationTypes.Type_String) || (ValidationType == SmartInput_ValidationTypes.Type_Email))
+{
+
+    <input type="text" @bind-value="Input" class="form-control form-control-dark autocomplete  @validationClass" style=" height:auto;" @bind-value:event="oninput" @onkeyup="(() => autosuggest(false))" @onfocusout="hideDisplay" />
+
+
+
+}
+else if (ValidationType == SmartInput_ValidationTypes.Type_Password)
+{
+    <input type="password" @bind-value="Input" class="form-control form-control-dark autocomplete  @validationClass" style=" height:auto;" @bind-value:event="oninput" @onkeyup="(() => autosuggest(false))" @onfocusout="hideDisplay" />
+
+}
 else
 {
-    <input type="Input" @bind-value="Input" class="form-control form-control-dark autocomplete" style=" height:auto;" @bind-value:event="oninput" @onkeyup="(()=>autosuggest(false))" @onfocusout="hideDisplay" />
+    <input type="number" @bind-value="Input" class="form-control form-control-dark autocomplete @validationClass" style=" height:auto;" @bind-value:event="oninput" @onkeyup="(() => autosuggest(false))" @onfocusout="hideDisplay" />
 
 }
 
@@ -32,18 +44,25 @@ else
     public bool Validate { get; set; }
 
     [Parameter]
-    public int ValidationType { get; set; }
+    public int? ValidationType { get; set; }
 
     [Parameter]
     public Dictionary<String, List<String>> Dropdown_List { get; set; }
 
+    [Parameter]
+    public bool Nullable { get; set; } //RETURNS True if validation succeeds else false
 
+    [Parameter]
+    public bool isValid { get; set; } //RETURNS True if validation succeeds else false
+
+
+
+    string validationClass = "";
     string dd = "unhide";
     private int seq = 0;
     private static List<String> activity_types = new List<string>(); //LOAD ALL TYPES
     private static List<String> employees_and_groups = new List<string>(); //LOAD ALL TYPES
     private static List<String> activity_titles = new List<string>();
-    //LOAD ALL TYPES
 
     private RenderFragment DynamicRender { get; set; }
 
@@ -52,33 +71,179 @@ else
 
         dd = "hide";
 
+        validateInput();
 
     }
 
-    private async void  toggleDisplay()
+    private async void toggleDisplay()
     {
         if (dd == "hide")
         {
             await autosuggest(true);
         }
-        else {
-            hideDisplay();
+        else
+        {
+
+            dd = "hide";
+
+            validateInput();
+            await Task.Delay(1);
         }
     }
 
-    private void validateInput() {
-        if (Validate)
+    private void validateInput()
+    {
+        if ((Validate) && (Input != ""))
         {
             if (ValidationType == SmartInput_ValidationTypes.Type_Integer)
             {
                 try
                 {
                     int.Parse(Input);
+                    validationClass = "valid";
+
                 }
                 catch
                 {
+                    validationClass = "invalid";
+                }
+            }
+            if (ValidationType == SmartInput_ValidationTypes.Type_Month)
+            {
+                try
+                {
+                    var x = int.Parse(Input);
+                    if (x <= 12 && x >= 1)
+                    {
+                        validationClass = "valid";
+                    }
+                    else
+                    {
+                        validationClass = "invalid";
+
+                    }
 
                 }
+                catch
+                {
+                    validationClass = "invalid";
+                }
+            }
+            if (ValidationType == SmartInput_ValidationTypes.Type_Minute || ValidationType == SmartInput_ValidationTypes.Type_Second)
+            {
+                try
+                {
+                    var x = int.Parse(Input);
+                    if (x <= 60 && x >= 1)
+                    {
+                        validationClass = "valid";
+                    }
+                    else
+                    {
+                        validationClass = "invalid";
+
+                    }
+
+                }
+                catch
+                {
+                    validationClass = "invalid";
+                }
+            }
+            if (ValidationType == SmartInput_ValidationTypes.Type_Hour)
+            {
+                try
+                {
+                    var x = int.Parse(Input);
+                    if (x <= 24 && x >= 1)
+                    {
+                        validationClass = "valid";
+                    }
+                    else
+                    {
+                        validationClass = "invalid";
+
+                    }
+
+                }
+                catch
+                {
+                    validationClass = "invalid";
+                }
+            }
+            if (ValidationType == SmartInput_ValidationTypes.Type_Day)
+            {
+                try
+                {
+                    var x = int.Parse(Input);
+                    if (x <= 31 && x >= 1)
+                    {
+                        validationClass = "valid";
+                    }
+                    else
+                    {
+
+                        validationClass = "invalid";
+                    }
+
+                }
+                catch
+                {
+                    validationClass = "invalid";
+                }
+            }
+            if (ValidationType == SmartInput_ValidationTypes.Type_Year)
+            {
+                try
+                {
+                    var x = int.Parse(Input);
+                    if (x >= 1900 && x<=(DateTime.Now.Year+1) )
+                    {
+                        validationClass = "valid";
+                    }
+                    else
+                    {
+
+                        validationClass = "invalid";
+                    }
+
+                }
+                catch
+                {
+                    validationClass = "invalid";
+                }
+            }
+            if (ValidationType == SmartInput_ValidationTypes.Type_Email)
+            {
+                if (Input.Contains("@") && Input.Contains("."))
+                {
+                    validationClass = "valid";
+                }
+                else
+                {
+                    validationClass = "invalid";
+                }
+            }
+            if (ValidationType == SmartInput_ValidationTypes.Type_inList)
+            {
+                validationClass = "invalid";
+                foreach (var v in Dropdown_List)
+                {
+                    if (v.Value.Contains(Input))
+                    {
+                        validationClass = "valid";
+                        break;
+                    }
+                }
+            }
+
+            if (validationClass == "invalid")
+            {
+                isValid = false;
+            }
+            else
+            {
+                isValid = true;
             }
         }
     }
@@ -86,7 +251,7 @@ else
     protected override Task OnInitializedAsync()
     {
 
-        /* TESTING DATA */
+        /* TESTING DATA 
         //LOAD STRING LISTS
         if (activity_titles.Count == 0)
         {
@@ -95,10 +260,12 @@ else
             activity_titles.Add("Test 3");
             activity_titles.Add("Test 4");
             activity_titles.Add("Test 5");
+            Dropdown_List = new Dictionary<String, List<String>>();
+            Dropdown_List.Add("First set of tests", activity_titles);
+            Dropdown_List.Add("Second set of tests", new List<string> { "Test 6", "Test 7" });
         }
-        Dropdown_List = new Dictionary<String, List<String>>();
-        Dropdown_List.Add("First set of tests", activity_titles);
-        Dropdown_List.Add("Second set of tests", new List<string> { "Test 6", "Test 7" });
+        ValidationType = SmartInput_ValidationTypes.Type_inList;
+        Validate = true;
         /* TESTING DATA */
 
 
@@ -106,9 +273,10 @@ else
         return base.OnInitializedAsync();
 
     }
-    protected async Task autosuggest(bool force=false)
+    protected async Task autosuggest(bool force = false)
     {
-        if (force) {
+        if (force)
+        {
             DynamicRender = (await CreateComponent(true));
 
         }
@@ -120,17 +288,17 @@ else
         dd = "unhide";
 
     }
-    private async Task<RenderFragment> CreateComponent(bool force=false) => builder =>
+    private async Task<RenderFragment> CreateComponent(bool force = false) => builder =>
     {
 
 
-        if (force||(Input.Split(';')[Input.Split(';').Count() - 1].Count() >= 2))
+        if (force || (Input.Split(';')[Input.Split(';').Count() - 1].Count() >= 2))
         {
             builder.OpenElement(seq++, "div");
             builder.AddAttribute(seq++, "class", "form-control-dark autocomplete-items");
             builder.AddAttribute(seq++, "style", "box-shadow: 0px 19px 19px 0px rgb(0 0 0 / 30 %);");
 
-            
+
 
 
             int tabindex = 0;
@@ -140,15 +308,16 @@ else
                 List<String> matches = new List<string>();
                 if (!force)//FIND MATCHES
                 {
-                    matches=c.Value.Where(k=> k.Trim().ToUpper().Contains(Input.Trim().ToUpper()) && (k != Input)).ToList();
+                    matches = c.Value.Where(k => k.Trim().ToUpper().Contains(Input.Trim().ToUpper()) && (k != Input)).ToList();
                 }
-                else { //RETURN ALL
+                else
+                { //RETURN ALL
                     matches = c.Value.ToList();
 
                 }
 
-                // ADD CATEGORY 
-                if ((c.Key != "")&&(matches.Count()>0))
+                // ADD CATEGORY
+                if ((c.Key != "") && (matches.Count() > 0))
                 {
                     builder.OpenElement(seq++, "div");
                     builder.AddAttribute(seq++, "class", "autocomplete-category");
@@ -158,7 +327,7 @@ else
                 }
 
 
-                // ADD ITEMS 
+                // ADD ITEMS
                 foreach (var k in matches)
                 {
                     tabindex++;
