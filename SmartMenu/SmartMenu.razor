@@ -2,7 +2,11 @@
 @using System.Linq;
 @using System.Reflection;
 
-<div class="@hide" style="        position: fixed;
+
+
+@if (FullScreen)
+{
+    <div class="@hide" style="        position: fixed;
         background: rgb(15 16 19);
 
         min-height: 100vh;
@@ -10,88 +14,135 @@
         width: 100%;
         top: 0;
         left: 0;
-        z-index: 1;">
-</div>
+        z-index: 1;" />
+
+}
 
 
-<div class="@hide" style="        position: absolute;
-        width: 100%;
-        z-index: 2;
-        top:100px;
-        left:0px;
-    ">
+@code{
+    private string changedstyle0 = "position: relative;";
+
+}
+@if (FullScreen)
+{
+    changedstyle0 = "";
+}
+<div style="@changedstyle0 ">
 
 
-    <div class="container-fluid panos-container">
 
-        <a href="#" style="
+    @code{
+        private string changedstyle1 = "";
+
+    }
+    @if (FullScreen)
+    {
+        changedstyle1 = "position: absolute;width: 100%; z-index: 2; top: 100px;left: 0px; ";
+    }
+    else
+    {
+        changedstyle1 = "position: absolute; width: 50vw; max-width:460px; z-index: 200;  background: rgb(15 16 19);box-shadow: 0px .5rem 1rem rgba(0,0,0,1) !important;border-radius:1em;";
+        if (LeftRight == "Left")
+        {
+            changedstyle1 += "left: 0px; ";
+        }
+        if (LeftRight == "Right")
+        {
+            changedstyle1 += "right: 0px; ";
+        }
+        if (UpDown == "Up")
+        {
+            changedstyle1 += "bottom: 0px; ";
+        }
+        if (UpDown == "Down")
+        {
+            changedstyle1 += "top: 30px; ";
+        }
+    }
+    <div class="@hide" style="@changedstyle1" @onfocusout="Close">
+
+
+        <div class="container-fluid panos-container">
+
+            @if (FullScreen)
+            {
+                <a href="#" style="
         float: right;
         margin-top: -60px;
         color: white;
         z-index: 2;
         margin-right: 44px;
         text-shadow: 0px 0px 10px black;
-    " class="@hide" @onclick="Toggle" @onclick:preventDefault><span style="font-size:24px" class="oi oi-x"></span></a>
+    " class="@hide" @onclick="Close" @onclick:preventDefault><span style="font-size:24px" class="oi oi-x"></span></a>
+            }
 
 
-        <div style="width:95%;margin:0 auto;padding:10px">
-            <div style="width:100%;">
+            <div style="width:95%;margin:0 auto;padding:10px">
+                <div style="width: 100%; ">
 
-                <input type="text" class="form-control" placeholder="Search" style="
+                    <input type="text" class="form-control" placeholder="Search" style="
                 background-color: rgba(0,0,0,0.8);
                 text-align:center;
                 color: white;
                 border-radius: 0.5em;
                 border: 1px solid rgba(255,255,255,0);
-                width: 100%;">
-            </div>
-            <br />
-            <br />
-            <!-- FAVOURITES
-    <h5 style="color:white">Αγαπημένα</h5>
-
-
-    <div style="width: 100%;margin: 0 auto;border: 1px solid rgba(255,255,255,0.2);border-radius: 0.5em;background: rgba(0,0,0,0.8);padding-top: 15px;">
-
-
-
-        <div style="margin: 10px;width:150px;align-items: center;text-align: -webkit-center;">
-            <NavLink href="#" class="panos-button-menu nav-link py-3 " style="width:66px;height:66px" @onclick="Toggle">
-                <span style="font-size:24px" class="oi oi-home"></span>
-            </NavLink>
-            <p style="color:white;text-shadow: 0 0 3px black, 0 0 5px black;">Αρχική</p>
-        </div>
-
-    </div>
-    <br />
-    <br />-->
-            @if ((PageIcon.Count == PageRoute.Count) && (PageIcon.Count == PageTitle.Count))
-            {
-            @for (appCount = 0; appCount < PageTitle.Count(); appCount++)
-            {
-
-                <div style="float:left;margin: 10px;width:150px;align-items: center;text-align: -webkit-center;">
-                    <a href="@PageRoute[appCount]" class="panos-button-menu nav-link py-3 " style="width:66px;height:66px " @onclick="Toggle">
-                        <object type="image/svg+xml" fill="white" data="@PageIcon[appCount]" height="28" width="28" style="color:white"/>
-
-                    </a>
-                    <p style="color:white;text-shadow: 0 0 3px black, 0 0 5px black;">@PageTitle[appCount]</p>
+                width: 100%;" @ref="MenuContent" @onfocusout="Close" autofocus>
                 </div>
+                <br />
+                <br />
+                @code{
+                    private string changedstyle2 = "overflow-y: auto;overflow-x:clip; height: 300px ;margin-bottom: 30px;";
 
-            }
-            }
+                }
+                @if (FullScreen)
+                {
+                    changedstyle2 = "overflow-y: auto;overflow-x:clip; height:50vh;";
+                }
+                <div style="@changedstyle2">
+                    <!--CHANGE THIS FOR FULLSCREEN-->
+                    @if ((PageIcon.Count == PageRoute.Count) && (PageIcon.Count == PageTitle.Count))
+                    {
+                        @for (appCount = 0; appCount < PageTitle.Count(); appCount++)
+                        {
 
+                            <div style="float:left;margin: 10px;width:150px;align-items: center;text-align: -webkit-center;">
+                                <a href="@PageRoute[appCount]" class="panos-button-menu nav-link py-3 " style="width:66px;height:66px " @onclick="Close">
+                                    @if (!System.IO.File.Exists(PageIcon[appCount]))
+                                    {
+                                        <h3>@PageTitle[appCount][0]</h3>
+                                    }
+                                    else
+                                    {
+                                        <img src="@PageIcon[appCount]" height="28" width="28" style="color:white" />
+                                    }
+                                </a>
+                                <p style="color:white;text-shadow: 0 0 3px black, 0 0 5px black;">@PageTitle[appCount]</p>
+                            </div>
+
+                        }
+                    }
+                    <br />
+                    <br />
+                </div>
+            </div>
         </div>
     </div>
 </div>
 @code {
-    public List<String> PageTitle =new List<string>();
+    [Parameter]
+    public bool FullScreen { get; set; }
+    [Parameter]
+    public String LeftRight { get; set; } = "Left";
+    [Parameter]
+    public String UpDown { get; set; } = "Down";
+
+    public List<String> PageTitle = new List<string>();
     public List<String> PageIcon = new List<string>();
     public List<String> PageRoute = new List<string>();
 
+    public ElementReference MenuContent { get; set; }
 
-
-    public int appCount ;
+    public int appCount;
     public List<Type> GetRoutables()
     {
         // Get all the components whose base class is ComponentBase
@@ -111,11 +162,12 @@
         }
         return routables;
     }
-    private string  GetImageUrlFromComponent(Type component) {
+    private string GetImageUrlFromComponent(Type component)
+    {
 
         string variableimage =
         component.GetFields(BindingFlags.Instance |
-                BindingFlags.Static | BindingFlags.Public ).Where(f => f.Name=="MenuIcon").Select(f=> f.GetRawConstantValue()).FirstOrDefault().ToString();
+                BindingFlags.Static | BindingFlags.Public).Where(f => f.Name == "MenuIcon").Select(f => f.GetRawConstantValue()).FirstOrDefault().ToString();
 
         return variableimage;
     }
@@ -128,12 +180,12 @@
 
         return variableimage;
     }
-    private  string GetRouteFromComponent(Type component)
+    private string GetRouteFromComponent(Type component)
     {
         var attributes = component.GetCustomAttributes(inherit: true);
 
         var routeAttributes = attributes.OfType<RouteAttribute>();
-        var routeAttribute  = attributes.OfType<RouteAttribute>().FirstOrDefault();
+        var routeAttribute = attributes.OfType<RouteAttribute>().FirstOrDefault();
 
         if (routeAttribute is null)
         {
@@ -157,9 +209,10 @@
         return route;
     }
 
-    protected override Task OnInitializedAsync() {
-        var routables=GetRoutables();
-        foreach( var c in routables)
+    protected override Task OnInitializedAsync()
+    {
+        var routables = GetRoutables();
+        foreach (var c in routables)
         {
             try
             {
@@ -178,7 +231,7 @@
     }
 
     public string hide = "hidden";
-    public void Toggle()
+    public async Task Toggle()
     {
         if (hide == "unhide")
         {
@@ -190,9 +243,31 @@
             hide = "unhide";
         }
 
-        jsr.InvokeVoidAsync("toTop");
         StateHasChanged();
+
+
+
+
     }
 
+    public void Close()
+    {
+        hide = "hide";
+        StateHasChanged();
 
+
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool first)
+    {
+        if (!first)
+        {
+            if (hide == "unhide")
+            {
+                await Task.Delay(250); // THE AWAITER HERE IS TO WAIT FOR THE ANIMATION TO COMPLETE
+                await MenuContent.FocusAsync();
+            }
+        }
+    }
 }
