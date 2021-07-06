@@ -2,7 +2,7 @@
 ![img](https://i.imgur.com/MpS2r8C.gif)
 
 ### About
-A stylized animated Calendar system simillar to Windows system 
+A stylized animated Calendar system simillar to Windows calendar system 
 
 ### RoadMap
 
