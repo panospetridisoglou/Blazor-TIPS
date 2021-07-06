@@ -1,0 +1,267 @@
+
+
+tr:hover {
+    box-shadow: 0 0 10px rgb(0 0 0 / 20%);
+    background-color: rgba(16,119,110,1);
+    color: white !important;
+}
+
+a.remove {
+    color: lightgray;
+    text-shadow: 0px 0px 5px transparent;
+    text-decoration: none;
+}
+a.remove:hover {
+    color: white;
+    text-shadow:0px 0px 5px white;
+    text-decoration: none;
+    
+}
+
+
+
+.smart-calendar {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 280px;
+    background: rgb(55 59 65) !important;
+    border-radius: 0.5em;
+    box-shadow: 0px .5rem 1rem rgba(0,0,0,1) !important;
+    border: 1px solid rgba(0,0,0,0.1);
+    padding: 20px;
+    transition: all;
+    transition-duration: 250ms;
+}
+
+.smart-calendar-grid-item {
+    float: left;
+    padding: 2px;
+    margin: 2px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid transparent;
+    border-radius: 0.5em;
+    min-width: 30px;
+    padding: 2px;
+    height: 30px;
+    padding: 0px !important;
+    cursor: pointer;
+    text-align: center;
+    line-height: 1.8;
+    transition: all;
+    transition-duration: 250ms;
+}
+
+    .smart-calendar-grid-item:hover {
+        background-color: rgba(16,119,110,1);
+        background: linear-gradient( 0deg, rgba(16,119,110,1) 0%, rgba(16,119,110,1) 100%);
+        box-shadow: 0px 0px 5px rgba(0,0,0,0.8);
+        text-shadow: 0px 0px 10px white;
+    }
+
+    .smart-calendar-grid-item:active {
+        background: linear-gradient( 0deg, rgba(16,119,110,1) 0%, rgba(0,198,81,1) 100%);
+        box-shadow: 0px 0px 5px rgba(0,0,0,1);
+        border: 1px solid rgba(0,198,81,1);
+        text-shadow: 0px 0px 10px white;
+    }
+
+.smart-calendar-list-item {
+    float: left;
+    padding: 2px;
+    margin: 2px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid transparent;
+    border-radius: 0.5em;
+    width: 100%;
+    height: 30px;
+    padding: 0px !important;
+    cursor:pointer;
+    text-align: center;
+    line-height: 1.8;
+    transition: all;
+    transition-duration: 250ms;
+}
+    .smart-calendar-list-item:hover {
+        background-color: rgba(16,119,110,1);
+        background: linear-gradient( 0deg, rgba(16,119,110,1) 0%, rgba(16,119,110,1) 100%);
+        box-shadow: 0px 0px 5px rgba(0,0,0,0.8);
+        text-shadow: 0px 0px 10px white;
+    }
+    .smart-calendar-list-item:active {
+        background: linear-gradient( 0deg, rgba(16,119,110,1) 0%, rgba(0,198,81,1) 100%);
+        box-shadow: 0px 0px 5px rgba(0,0,0,1);
+        border: 1px solid rgba(0,198,81,1);
+        text-shadow: 0px 0px 10px white;
+    }
+
+    .smart-calendar-grid-item.today {
+
+        border: 1px solid rgba(16,119,110,1);
+       
+    }
+    .smart-calendar-grid-item.selected {
+        background: linear-gradient( 0deg,rgba(0,198,81,1) 0%, rgba(0,198,81,1) 100%);
+        box-shadow: 0px 0px 5px rgba(0,0,0,1);
+        text-shadow: 0px 0px 10px white;
+    }
+.smart-calendar-topbar {
+    float: left;
+    padding: 2px;
+    margin: 2px;
+    width: 30px;
+    height: 30px;
+    padding: 0px !important;
+    color:gray;
+    cursor: pointer;
+    text-align: center;
+    line-height: 1.8;
+    transition: all;
+    transition-duration: 250ms;
+}
+
+.smart-calendar-topbar:hover {
+    color:white;
+    text-shadow: 0px 0px 10px white;
+}
+
+.smart-calendar-topbar:active {
+    color: white;
+    text-shadow: 0px 0px 10px white;
+}
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+/* width */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: rgba(20,20,20,1);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: rgba(90,90,90,1);
+}
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(120,120,120,1);
+    }
+/* Standard syntax */
+@keyframes fadein {
+    from {
+        display: none;
+        max-height: 0;
+        visibility: collapse;
+        opacity: 0;
+    }
+
+    to {
+        max-height: 999px;
+        opacity: 1;
+    }
+}
+/* Standard syntax */
+@keyframes fadeout {
+    from {
+        max-height: 999px;
+        opacity: 1;
+    }
+
+    to {
+        display: none;
+        visibility: collapse;
+        max-height: 0;
+        opacity: 0;
+    }
+}
+/* Chrome, Safari, Opera */
+@-webkit-keyframes fadein {
+    from {
+        display: none;
+        visibility: collapse;
+        opacity: 0;
+        height: 0;
+    }
+
+    to {
+        display: block;
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+.unhide {
+    animation: fadein 0.2s;
+    -webkit-animation: fadein 0.2s; /* Chrome, Safari, Opera */
+    animation-fill-mode: forwards;
+    -webkit-animation-fill-mode: forwards;
+}
+
+.hide {
+    animation: fadeout 0.2s;
+    -webkit-animation: fadeout 0.2s; /* Chrome, Safari, Opera */
+    animation-fill-mode: forwards;
+    -webkit-animation-fill-mode: forwards;
+}
+
+.hidden {
+    display: none;
+    visibility: collapse;
+    opacity: 0;
+    height: 0;
+}
+.panos-button-blue {
+    background-color: rgba(16,119,110,1);
+    border: 1px solid rgba(16,119,110,1);
+    box-shadow: 0 .125rem .25rem rgba(16,119,110,0.2);
+    color: white;
+    border-radius: 5em;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    text-decoration: none;
+    transition: all;
+    transition-duration: 250ms;
+}
+
+    .panos-button-blue:hover {
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 .125rem .25rem rgba(16,119,110,1);
+        background: rgba(16,119,110,1);
+        background: linear-gradient( 0deg, rgba(16,119,110,1) 0%, rgba(0,198,81,1) 100%);
+    }
+
+.panos-button-red {
+    background: #b40101;
+    border: 1px solid rgb(180,1,1,1);
+    box-shadow: 0 .125rem .25rem rgb(180,1,1,0.2);
+    color: white;
+    border-radius: 5em;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    text-decoration: none;
+    transition: all;
+    transition-duration: 250ms;
+}
+
+    .panos-button-red:hover {
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 .125rem .25rem rgb(180,1,1,1);
+        background: #b40101;
+        background: linear-gradient(0deg, rgba(222,39,0,1) 0%, rgba(255,114,60,1) 100%);
+    }
