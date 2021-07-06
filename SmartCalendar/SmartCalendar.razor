@@ -1,0 +1,285 @@
+@page "/calendar"
+
+<div class="@hide" style="position: relative; z-index: 10;">
+    <div class="smart-calendar noselect" style="top:30px;height:270px;">
+
+        @if (Type == "Date")
+        {
+            <div class="d-flex justify-content-between noselect" style=" margin-bottom: 10px; margin-top: -10px; margin-left: -10px; margin-right: -10px;padding:10px">
+                <a class="smart-calendar-topbar noselect" @onclick="prevmonth" style="margin: 0px; border-radius: 0px;">@(" < ")</a>
+                <a class="smart-calendar-topbar noselect" @onclick="changetoMonthView" style="width: 100%; margin: 0px; border-radius: 0px;">@DateTime.Parse(pageM + "/1/" + pageY).ToString("MMMM") @DateTime.Parse(pageM + "/1/" + pageY).ToString("yyyy") </a>
+                <a class="smart-calendar-topbar noselect" @onclick="nextmonth" style="margin: 0px; border-radius: 0px;">@(" > ")</a>
+            </div>
+            @foreach (DateTime c in datetimes)
+            {
+
+                @if (c.ToShortDateString() == DateTime.Now.ToShortDateString())
+                {
+                    <div class="smart-calendar-grid-item @isSelected(c) today noselect" @onmousedown="(() => selectDateTime(c))">
+                        @c.Day
+                    </div>
+                }
+
+
+                else
+                {
+                    <div class="smart-calendar-grid-item @isSelected(c) noselect" @onmousedown="@(() => selectDateTime(c))">
+                        @c.Day
+                    </div>
+                }
+            }
+
+
+
+        }
+        @if (Type == "Month")
+        {
+            <div class="d-flex justify-content-between noselect" style=" margin-bottom: 10px; margin-top: -10px; margin-left: -10px; margin-right: -10px;padding:10px">
+                <a class="smart-calendar-topbar noselect" @onclick="prevyear" style="margin: 0px; border-radius: 0px;">@(" < ")</a>
+                <a class="smart-calendar-topbar noselect" @onclick="changetoYearView" style="width: 100%; margin: 0px; border-radius: 0px;">@DateTime.Parse(pageM + "/1/" + pageY).ToString("yyyy") </a>
+                <a class="smart-calendar-topbar noselect" @onclick="nextyear" style="margin: 0px; border-radius: 0px;">@(" > ")</a>
+            </div>
+            <div style="width: 100%; height: calc( 100% - 50px ); overflow-y: auto;overflow-x:hidden">
+                @foreach (DateTime c in datetimes)
+                {
+
+                    @if (c.ToShortDateString() == DateTime.Now.ToShortDateString())
+                    {
+                        <div class="smart-calendar-list-item @isSelected(c) today noselect" @onmousedown="(() => selectMonth(c))">
+                            @c.ToString("MMMM")
+                        </div>
+                    }
+
+
+                    else
+                    {
+                        <div class="smart-calendar-list-item @isSelected(c) noselect" @onmousedown="@(() => selectMonth(c))">
+                            @c.ToString("MMMM")
+                        </div>
+                    }
+                }
+            </div>
+
+
+        }
+        @if (Type == "Year")
+        {
+            <div class="d-flex justify-content-between noselect" style=" margin-bottom: 10px; margin-top: -10px; margin-left: -10px; margin-right: -10px;padding:10px">
+                <a class="smart-calendar-topbar noselect" @onclick="prev20year" style="margin: 0px; border-radius: 0px;">@(" < ")</a>
+                <a class="smart-calendar-topbar noselect" style="width: 100%; margin: 0px; border-radius: 0px;"> </a>
+                <a class="smart-calendar-topbar noselect" @onclick="next20year" style="margin: 0px; border-radius: 0px;">@(" > ")</a>
+            </div>
+            <div style="width: 100%; height: calc( 100% - 50px ); overflow-y: auto; overflow-x: hidden">
+
+                @foreach (DateTime c in datetimes)
+                {
+
+                    @if (c.ToShortDateString() == DateTime.Now.ToShortDateString())
+                    {
+                        <div class="smart-calendar-list-item @isSelected(c) today noselect" @onmousedown="(() => selectYear(c))">
+                            @c.Year
+                        </div>
+                    }
+
+
+                    else
+                    {
+                        <div class="smart-calendar-list-item @isSelected(c) noselect" @onmousedown="@(() => selectYear(c))">
+                            @c.Year
+                        </div>
+                    }
+                }
+
+
+
+            </div>
+                }
+            </div>
+        </div>
+
+@code{
+    [Parameter]
+    public string Type { get; set; } = "Date";
+    [Parameter]
+    public List<DateTime> SelectedDateTimes { get; set; }
+    [Parameter]
+    public String LeftRight { get; set; } = "Left";
+
+
+
+    public event Action OnSelectedDateTimesChange;
+
+
+    List<DateTime> datetimes = new List<DateTime>();
+    int pageM = 1;
+    int pageD = 1;
+    int pageY = 1;
+    string hide = "hidden";
+
+
+    public void Toggle()
+    {
+        if (hide == "unhide")
+        {
+
+            hide = "hide";
+        }
+        else
+        {
+            hide = "unhide";
+        }
+
+        StateHasChanged();
+    }
+
+
+
+    protected override void OnInitialized()
+    {
+        OnSelectedDateTimesChange += StateHasChanged;
+        if (SelectedDateTimes == null)
+        {
+
+            pageM = DateTime.Now.Month;
+            pageD = DateTime.Now.Day;
+            pageY = DateTime.Now.Year;
+        }
+        else
+        {
+            pageM = SelectedDateTimes[0].Month;
+            pageD = SelectedDateTimes[0].Day;
+            pageY = SelectedDateTimes[0].Year;
+        }
+        LoadCalendar();
+    }
+    private void LoadCalendar()
+    {
+        datetimes.Clear();
+        if (Type == "Date")
+        {
+            for (DateTime c = DateTime.Parse(pageM + "/1/" + pageY); c < DateTime.Parse(pageM + "/1/" + pageY).AddMonths(1); c = c.AddDays(1))
+            {
+                datetimes.Add(c);
+            }
+        }
+        if (Type == "Month")
+        {
+            for (DateTime c = DateTime.Parse("1/1/" + pageY); c < DateTime.Parse( "1/1/" + pageY).AddYears(1); c = c.AddMonths(1))
+            {
+                datetimes.Add(c);
+            }
+        }
+        if (Type == "Year")
+        {
+            for (DateTime c = DateTime.Parse("1/1/" + pageY); c < DateTime.Parse("1/1/" + pageY).AddYears(20); c = c.AddYears(1))
+            {
+                datetimes.Add(c);
+            }
+        }
+        StateHasChanged();
+    }
+
+    private void nextmonth()
+    {
+        DateTime temp = DateTime.Parse(pageM + "/" + pageD + "/" + pageY).AddMonths(+1);
+        pageM = temp.Month;
+        pageY = temp.Year;
+        LoadCalendar();
+    }
+    private void prevmonth()
+    {
+        DateTime temp = DateTime.Parse(pageM + "/" + pageD + "/" + pageY).AddMonths(-1);
+        pageM = temp.Month;
+        pageY = temp.Year;
+        LoadCalendar();
+    }
+
+    private void nextyear()
+    {
+        DateTime temp = DateTime.Parse(pageM + "/" + pageD + "/" + pageY).AddYears(+1);
+        pageM = temp.Month;
+        pageY = temp.Year;
+        LoadCalendar();
+    }
+    private void prevyear()
+    {
+        DateTime temp = DateTime.Parse(pageM + "/" + pageD + "/" + pageY).AddYears(-1);
+        pageM = temp.Month;
+        pageY = temp.Year;
+        LoadCalendar();
+    }
+    private void prev20year()
+    {
+        DateTime temp = DateTime.Parse(pageM + "/" + pageD + "/" + pageY).AddYears(-20);
+        pageM = temp.Month;
+        pageY = temp.Year;
+        LoadCalendar();
+    }
+    private void next20year()
+    {
+        DateTime temp = DateTime.Parse(pageM + "/" + pageD + "/" + pageY).AddYears(20);
+        pageM = temp.Month;
+        pageY = temp.Year;
+        LoadCalendar();
+    }
+    private string isSelected(DateTime d)
+    {
+        if ((SelectedDateTimes != null) && (SelectedDateTimes.Select(x => x.ToString("ddMMyyy")).Contains(d.ToString("ddMMyyy"))))
+        {
+            Console.WriteLine(d + "   " + "selected");
+            return " selected ";
+        }
+        return " ";
+
+    }
+    private void selectMonth(DateTime d)
+    {
+        pageM = d.Month;
+        Type = "Date";
+        LoadCalendar();
+
+
+    }
+    private void selectYear(DateTime d)
+    {
+        pageY = d.Year;
+        Type = "Month";
+        LoadCalendar();
+
+
+    }
+    private void changetoMonthView() {
+        Type = "Month";
+        LoadCalendar();
+
+    }
+    private void changetoYearView()
+    {
+        Type = "Year";
+        LoadCalendar();
+
+    }
+    private void selectDateTime(DateTime d)
+    {
+
+        if ((SelectedDateTimes != null) && (SelectedDateTimes.Any(x => x.ToShortDateString() == d.ToShortDateString())))
+        {
+
+            SelectedDateTimes.Remove(d);
+            Console.WriteLine(d + "REMOVED");
+        }
+        else if (SelectedDateTimes == null)
+        {
+            SelectedDateTimes = new List<DateTime>();
+        }
+        else
+        {
+
+            SelectedDateTimes.Add(d);
+            Console.WriteLine(d + "ADDED");
+        }
+        OnSelectedDateTimesChange();
+        StateHasChanged();
+
+    }
+}
