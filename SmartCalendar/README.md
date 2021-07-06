@@ -10,6 +10,3 @@ A stylized animated Calendar system simillar to Windows calendar system
 - [x] Easy to change year - month
 - [x] Multiple selections
 - [x] On Change Events  
-- [ ] Add minimized version (currently it's only full screen)
-- [ ] (Optional) add favourites and show them first
-
