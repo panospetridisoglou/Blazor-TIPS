@@ -1,0 +1,140 @@
+@page "/table"
+@using System.Reflection;
+@using System.Linq;
+
+<table class="@customClass">
+    <thead>
+        <tr>
+            @foreach (var f in headers)
+            {
+                @if (f.sorting == "asc")
+                {
+                    SortIcon = "▵";
+                }
+                else if (f.sorting == "desc")
+                {
+                    SortIcon = "▿";
+
+                }
+                else
+                {
+                    SortIcon = "   ";
+
+                }
+                <th scope="col" @onclick="(() => SortTable(f))" class=" smarttable-thread-th noselect">@f.field.Name @SortIcon</th>
+            }
+        </tr>
+    </thead>
+    @foreach (var t in Data)
+    {
+        <tr>
+            @foreach (var f in headers)
+            {
+                @if ((f.field.IsInitOnly)||(!Editable))
+                {
+
+                    <td class=" smarttable-td noselect"><input value="@(f.field.GetValue(t) + "")" disabled /> </td>
+                }
+                else
+                {
+                    <td class=" smarttable-td noselect"><input @oninput="((e) => { UpdateFieldValue(t, f.field, e.Value.ToString()); })" value="@(f.field.GetValue(t) + "")" /> </td>
+
+                }
+            }
+        </tr>
+    }
+</table>
+
+    @code{
+            [Parameter]
+            public List<dynamic> Data { get; set; } = new List<dynamic>();
+            [Parameter]
+            public string customClass { get; set; } = "table table-borderless text-white";
+            [Parameter]
+            public bool Editable { get; set; } = false;
+
+            public event Action OnDataChange;
+
+
+            private string SortIcon = "   ";
+
+            private List<SmartTableFilters> headers = new List<SmartTableFilters>();
+
+
+            protected override void OnInitialized()
+            {
+              
+
+                var tempheaders =
+        (Data[0]).GetType().GetFields(BindingFlags.Default | BindingFlags.Instance |
+               BindingFlags.Static | BindingFlags.Public);
+
+                foreach (var te in tempheaders)
+                {
+                    headers.Add(new SmartTableFilters()
+                    {
+                        field = te
+                    });
+                }
+                OnDataChange += StateHasChanged;
+            }
+            private void UpdateFieldValue(dynamic o, FieldInfo f, String s)
+            {
+
+                try
+                {
+                    if (f.FieldType == typeof(string))
+                    {
+                        f.SetValue(o, s);
+                    }
+                    else if (f.FieldType == typeof(DateTime)) {
+                        f.SetValue(o, DateTime.Parse(s));
+                    }
+                    else if (f.FieldType == typeof(bool))
+                    {
+                        if (s == "True")
+                        {
+                            f.SetValue(o, true);
+                        }
+                        else if (s == "False")
+                        {
+                            f.SetValue(o, false);
+                        }
+
+                    }
+                
+
+            }
+            catch (Exception ae)
+            {
+                Console.WriteLine(ae.StackTrace);
+                Console.WriteLine(ae.Message);
+            }
+        OnDataChange();
+
+        }
+        private void SortTable(SmartTableFilters f)
+        {
+
+            if (f.sorting == "asc")
+            {
+                Data = Data.OrderByDescending(p => f.field.GetValue(p)).ToList();
+                f.sorting = "desc";
+            }
+            else
+            {
+                Data = Data.OrderBy(p => f.field.GetValue(p)).ToList();
+                f.sorting = "asc";
+
+            }
+            foreach (var t in headers)
+            {
+                if (t != f)
+                {
+                    t.sorting = "";
+                }
+            }
+            StateHasChanged();
+
+        }
+    }
