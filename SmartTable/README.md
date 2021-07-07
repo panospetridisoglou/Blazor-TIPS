@@ -28,6 +28,8 @@ You can use it as a component in blazor and bind your List<object> in it and dyn
 Add the cs file in your models folder and use it in the blazor SmartTable component
 Copy paste the css file in your css file , or include it 
 and whenever you want to add a table in your page simply add
+  
+  
 ``` <SmartTable Data="mycustomlist" />```
 
 ``` <SmartTable Data="mycustomlist" Editable="true"/>```
