@@ -1,5 +1,6 @@
 
 
+
 tr:hover {
     box-shadow: 0 0 10px rgb(0 0 0 / 20%);
     background-color: rgba(16,119,110,1);
@@ -157,47 +158,52 @@ a.remove:hover {
     text-shadow: 0px 0px 10px white;
 }
 
+.smarttable-filter-input {
+    border: 1px solid transparent;
+    background-color: #eeeeee6e;
+    margin-top: 10px;
+    width: 100%;
+}
+.smarttable-filter-input:active {
+    border: 1px solid transparent;
+    background-color: #eee;
+    margin-top: 10px;
+    width: 100%;
+}
+
 .smarttable-td {
     text-overflow: ellipsis;
-    padding: 10px;
+    padding: 10px !important;
     overflow-x: auto;
 }
 .smarttable-td input {
     text-overflow: ellipsis;
-    padding: 10px;
     overflow-x: auto;
-    margin:-10px;
     width:100%;
     background:transparent;
     border-color:transparent;
-        color:unset;
+    color:unset;
 
 }
-    .smarttable-td input:enabled:focus,:enabled:active {
+    .smarttable-td input:enabled:focus, .smarttable-td input:enabled:active {
         text-overflow: ellipsis;
-        padding: 10px;
         overflow-x: auto;
-        margin: -10px;
         width: 100%;
         background-color: #eee;
         border-color: transparent;
         color: black;
     }
- tr:hover .smarttable-td input {
+    tr:hover .smarttable-td input {
         text-overflow: ellipsis;
-        padding: 10px;
         overflow-x: auto;
-        margin: -10px;
         width: 100%;
-        background-color: #eee;
+        background-color: #eeeeee6e;
         border-color: transparent;
-        color:black;
-    }
+        color: black;
+}
     tr:hover .smarttable-td input:disabled {
         text-overflow: ellipsis;
-        padding: 10px;
         overflow-x: auto;
-        margin: -10px;
         width: 100%;
         background: transparent;
         border-color: transparent;
@@ -205,13 +211,52 @@ a.remove:hover {
     }
 .smarttable-thread-th input:disabled {
     text-overflow: ellipsis;
-    padding: 10px;
     overflow-x: auto;
-    margin: -10px;
     width: 100%;
     background: transparent;
     border-color: transparent;
     color: unset;
+}
+input:focus-visible {
+    outline:unset;
+}
+.smarttable-page-button {
+    background-color: rgba(16,119,110,1);
+    box-shadow: 0 0.125rem 0.25rem rgb(16 119 110 / 20%);
+    color: white;
+    border-radius: 5em;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    text-decoration: none;
+    transition: all;
+    transition-duration: 250ms;
+}
+    .smarttable-page-button.disabled {
+        background: rgb(9 72 66);
+        color: gray;
+        cursor: pointer;
+        pointer-events: none;
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+        -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+        user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+    }
+.smarttable-page-button.active {
+    color: white;
+    text-decoration: none;
+    box-shadow: 0 .125rem .25rem rgba(16,119,110,1);
+    background: rgba(16,119,110,1);
+    background: linear-gradient( 0deg, rgba(16,119,110,1) 0%, rgba(0,198,81,1) 100%);
+}
+.smarttable-page-button:hover {
+    color: white;
+    text-decoration: none;
+    box-shadow: 0 .125rem .25rem rgba(16,119,110,1);
+    background: rgba(16,119,110,1);
+    background: linear-gradient( 0deg, rgba(16,119,110,1) 0%, rgba(0,198,81,1) 100%);
 }
 input:focus-visible {
     outline:unset;
