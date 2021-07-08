@@ -2,7 +2,8 @@
 @using System.Reflection;
 @using System.Linq;
 
-<table class="@customClass">
+
+<table class="@customClass" style="min-height:@tableheight">
     <thead>
         <tr>
             @foreach (var f in headers)
@@ -21,101 +22,239 @@
                     SortIcon = "   ";
 
                 }
-                <th scope="col" @onclick="(() => SortTable(f))" class=" smarttable-thread-th noselect">@f.field.Name @SortIcon</th>
+                <th scope="col" @onclick="(() => SortTable(f))" class=" smarttable-thread-th noselect">@f.field.Name @SortIcon <br><input @onkeyup="FilterTable" @bind="f.filter" class="smarttable-filter-input" /></th>
             }
         </tr>
     </thead>
-    @foreach (var t in Data)
-    {
-        <tr>
-            @foreach (var f in headers)
-            {
-                @if ((f.field.IsInitOnly)||(!Editable))
-                {
+    <tbody>
 
-                    <td class=" smarttable-td noselect"><input value="@(f.field.GetValue(t) + "")" disabled /> </td>
-                }
-                else
+        @foreach (var t in _Data)
+        {
+            <tr style="height:53px">
+                @foreach (var f in headers)
                 {
-                    <td class=" smarttable-td noselect"><input @oninput="((e) => { UpdateFieldValue(t, f.field, e.Value.ToString()); })" value="@(f.field.GetValue(t) + "")" /> </td>
+                    @if ((f.field.IsInitOnly) || (!Editable))
+                    {
 
+                        <td class=" smarttable-td noselect"><input value="@(f.field.GetValue(t) + "")" disabled /> </td>
+                    }
+                    else
+                    {
+                        <td class=" smarttable-td noselect"><input @oninput="((e) => { UpdateFieldValue(t, f.field, e.Value.ToString()); })" value="@(f.field.GetValue(t) + "")" /> </td>
+
+                    }
                 }
-            }
-        </tr>
-    }
+            </tr>
+        }
+        @for (int allrows = _Data.Count(); allrows < (itemsPerPage); allrows++) { 
+            <tr class=" noselect" style="height:53px"></tr>
+        }
+        </tbody>
 </table>
 
-    @code{
-            [Parameter]
-            public List<dynamic> Data { get; set; } = new List<dynamic>();
-            [Parameter]
-            public string customClass { get; set; } = "table table-borderless text-white";
-            [Parameter]
-            public bool Editable { get; set; } = false;
-
-            public event Action OnDataChange;
-
-
-            private string SortIcon = "   ";
-
-            private List<SmartTableFilters> headers = new List<SmartTableFilters>();
-
-
-            protected override void OnInitialized()
+@if (itemsPerPage != null) { 
+    <br />
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            <li class="page-item " @onclick="PreviousTablePage">
+                <a class="smarttable-page-button @navbarprevDisabled()" href="#" @onclick:preventDefault style="border-bottom-right-radius: 0px;border-top-right-radius: 0px;">Previous</a>
+            </li>
+            @foreach (var i in pages)
             {
-              
-
-                var tempheaders =
-        (Data[0]).GetType().GetFields(BindingFlags.Default | BindingFlags.Instance |
-               BindingFlags.Static | BindingFlags.Public);
-
-                foreach (var te in tempheaders)
+                if (Math.Abs(pageCount - (i-1)) == 3)
                 {
-                    headers.Add(new SmartTableFilters()
-                    {
-                        field = te
-                    });
+                    <li class="page-item " @onclick="() => GoToTablePage(i)"><a class=" smarttable-page-button " style="border-radius:0px;" href="#" @onclick:preventDefault>...</a></li>
+
                 }
-                OnDataChange += StateHasChanged;
+                else if (Math.Abs(pageCount - (i - 1)) < 3)
+                {
+
+                    <li class="page-item " @onclick="() => GoToTablePage(i)"><a class=" smarttable-page-button @(navbarActiveClass(i))" style="border-radius:0px;" href="#" @onclick:preventDefault>@i</a></li>
+                }
+
             }
-            private void UpdateFieldValue(dynamic o, FieldInfo f, String s)
+            <li class="page-item" @onclick="NextTablePage">
+                <a class="smarttable-page-button @navbarnextDisabled()" style="border-bottom-left-radius: 0px;border-top-left-radius: 0px;" href="#" @onclick:preventDefault>Next</a>
+            </li>
+        </ul>
+</nav>
+}
+
+
+    @code{
+        [Parameter]
+        public List<dynamic> Data { get; set; } = new List<dynamic>();
+        [Parameter]
+        public string customClass { get; set; } = "table-responsive table-borderless text-white";
+        [Parameter]
+        public bool Editable { get; set; } = false;
+        [Parameter]
+        public int itemsPerPage { get; set; } = 7;
+
+        public event Action OnDataChange;
+
+
+        private List<dynamic> _Data { get; set; } = new List<dynamic>();
+        private string tableheight = "500px";
+        private int pageCount = 0;
+        private List<int> pages = new List<int>();
+        private string SortIcon = "   ";
+
+        private List<SmartTableFilters> headers = new List<SmartTableFilters>();
+
+
+        protected override void OnInitialized()
+        {
+            //TEST DATA
+            Data.Add(new TestModel("Panos3", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos1", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos2", DateTime.Now, "", false, null));
+            Data.Add(new TestModel("Panos1", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos3", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos1", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos2", DateTime.Now, "", false, null));
+            Data.Add(new TestModel("Panos1", DateTime.Now, "testreadonly", false, null));
+            Data.Add(new TestModel("Panos", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos3", DateTime.Now, "", true, null));
+            Data.Add(new TestModel("Panos1", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos2", DateTime.Now, "", false, null));
+            Data.Add(new TestModel("Panos1", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos3", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos1", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos2", DateTime.Now, "", false, null));
+            Data.Add(new TestModel("Panos1", DateTime.Now, "testreadonly", false, null));
+            Data.Add(new TestModel("Panos", DateTime.Now, "testreadonly", false, null));
+            Data.Add(new TestModel("Panos3", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos1", DateTime.Now, "testreadonly", false, null));
+            Data.Add(new TestModel("Panos2", DateTime.Now, "", false, null));
+            Data.Add(new TestModel("Panos1", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos3", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos1", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos2", DateTime.Now, "", false, null));
+            Data.Add(new TestModel("Panos1", DateTime.Now, "testreadonly", true, null));
+            Data.Add(new TestModel("Panos", DateTime.Now, "testreadonly", true, null));
+            //TEST DATA
+
+
+
+            if (itemsPerPage != null)
+            {
+                for (int i = 1; i <= ((Data.Count / itemsPerPage) + ((Data.Count % itemsPerPage) > 0 ? 1 : 0)) ; i++)
+                {
+                    pages.Add(i);
+                }
+                tableheight =(53* (itemsPerPage+2))+"px";
+            }
+            LoadTablePage(Data);
+
+            var tempheaders =
+    (Data[0]).GetType().GetFields(BindingFlags.Default | BindingFlags.Instance |
+           BindingFlags.Static | BindingFlags.Public);
+
+            foreach (var te in tempheaders)
+            {
+                headers.Add(new SmartTableFilters()
+                {
+                    field = te
+                });
+            }
+            OnDataChange += StateHasChanged;
+        }
+
+
+        private string navbarActiveClass(int i) {
+            return ((pageCount + 1) == i ? "active" : "");
+        }
+        private string navbarprevDisabled()
+        {
+            return ((pageCount == 0) ? "disabled" : "");
+        }
+        private string navbarnextDisabled()
+        {
+            return ((pageCount == ((Data.Count / itemsPerPage) + ((Data.Count % itemsPerPage) > 0 ? 1 : 0)) - 1) ? "disabled" : "");
+        }
+        private void LoadTablePage(List<dynamic> data) {
+
+            if (itemsPerPage != null)
+            {
+                _Data = data.Skip(pageCount * itemsPerPage).Take(itemsPerPage).ToList();
+            }
+
+        }
+
+        private void NextTablePage() {
+            if (itemsPerPage != null) {
+                if (pageCount < ((Data.Count / itemsPerPage) + ((Data.Count % itemsPerPage) > 0 ? 1:0) )-1) {
+                    pageCount += 1;
+                }
+            }
+            FilterTable();
+        }
+        private void GoToTablePage(int i)
+        {
+            if (itemsPerPage != null)
             {
 
-                try
-                {
-                    if (f.FieldType == typeof(string))
-                    {
-                        f.SetValue(o, s);
-                    }
-                    else if (f.FieldType == typeof(DateTime)) {
-                        f.SetValue(o, DateTime.Parse(s));
-                    }
-                    else if (f.FieldType == typeof(bool))
-                    {
-                        if (s == "True")
-                        {
-                            f.SetValue(o, true);
-                        }
-                        else if (s == "False")
-                        {
-                            f.SetValue(o, false);
-                        }
+                pageCount = i-1;
 
+            }
+            FilterTable();
+        }
+        private void PreviousTablePage()
+        {
+            if (itemsPerPage != null)
+            {
+                if (pageCount >0)
+                {
+                    pageCount -= 1;
+                }
+            }
+            FilterTable();
+        }
+
+        private void UpdateFieldValue(dynamic o, FieldInfo f, String s)
+        {
+
+            try
+            {
+                if (f.FieldType == typeof(string))
+                {
+                    f.SetValue(o, s);
+                }
+                else if (f.FieldType == typeof(DateTime)) {
+                    f.SetValue(o, DateTime.Parse(s));
+                }
+                else if (f.FieldType == typeof(bool))
+                {
+                    if (s == "True")
+                    {
+                        f.SetValue(o, true);
                     }
-                
+                    else if (s == "False")
+                    {
+                        f.SetValue(o, false);
+                    }
+
+                }
+
 
             }
             catch (Exception ae)
             {
-                Console.WriteLine(ae.StackTrace);
-                Console.WriteLine(ae.Message);
+
             }
-        OnDataChange();
+            OnDataChange();
 
         }
+
+
+
         private void SortTable(SmartTableFilters f)
         {
-
+            List<dynamic> _Data = new List<dynamic>();
             if (f.sorting == "asc")
             {
                 Data = Data.OrderByDescending(p => f.field.GetValue(p)).ToList();
@@ -127,6 +266,8 @@
                 f.sorting = "asc";
 
             }
+
+
             foreach (var t in headers)
             {
                 if (t != f)
@@ -134,6 +275,31 @@
                     t.sorting = "";
                 }
             }
+            FilterTable();
+
+
+            StateHasChanged();
+
+        }
+        private void FilterTable() {
+            var _Data = Data.Where(p => (headers[0].field.GetValue(p) + "").ToUpper().Contains(headers[0].filter.ToUpper())).ToList();
+            foreach (var f in headers)
+            {
+                _Data = _Data.Where(p => (f.field.GetValue(p) + "").ToUpper().Contains(f.filter.ToUpper())).ToList();
+            }
+            Console.WriteLine(_Data.Count());
+            pages.Clear();
+            if (itemsPerPage != null)
+            {
+                for (int i = 1; i <= ((_Data.Count / itemsPerPage) + ((_Data.Count % itemsPerPage) > 0 ? 1 : 0)); i++)
+                {
+                    pages.Add(i);
+                }
+                tableheight = (53 * (itemsPerPage + 2)) + "px";
+            }
+
+            if (!pages.Contains(pageCount)) { pageCount = 0; }//if current page not in pages
+            LoadTablePage(_Data);
             StateHasChanged();
 
         }
