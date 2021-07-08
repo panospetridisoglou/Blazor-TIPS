@@ -16,10 +16,11 @@ You can use it as a component in blazor and bind your List<object> in it and dyn
 - [x] bind list in table and automatically trigger event OnDataChange
 - [x] custom table class choice
 - [x] add filters for each column and store to memory
+- [x] Pagination
 - [ ] implement Validation of data for each cell
 - [ ] implement functionality for clicking row on read only tables
   
-
+- [ ] (Optional) Scroll pagination
 - [ ] (Optional) implement functionality to add more rows
 - [ ] (Optional) implement SmartDropDown in editable tables for enumerations
 
@@ -34,5 +35,6 @@ and whenever you want to add a table in your page simply add
 ``` <SmartTable Data="mycustomlist" />```
 
 ``` <SmartTable Data="mycustomlist" Editable="true"/>```
+``` <SmartTable Data="mycustomlist" Editable="true" itemsPerPage=10 />```
 
 Enjoy
