@@ -1,4 +1,4 @@
-# Smart Menu
+# Smart Table
 ![img](https://i.imgur.com/nQbK5BD.gif)
 
 ### About
